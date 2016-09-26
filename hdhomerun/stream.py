@@ -84,8 +84,11 @@ def startStream(channel,devices,quality):
     
     streamPath = getPath(channel)
     
-    # ffmpeg -i ./stream/stream.ts -vcodec copy -acodec copy ./static/streams/"+channel+".m3u8"
-    pid = sub.Popen(["ffmpeg", "-i", "http://"+ip+":5004/auto/v"+channel+"?transcode="+quality, "-vcodec", "copy", "./static/streams/"+channel+".m3u8"]).pid
+    # ffmpeg invocation: input from hdhomerun URL stream, video codec
+    # set to copy, audio codec set to mp3, hls_flags set to delete so
+    # we don't fill the disk when we watch, output to m3u8 file in
+    # static/streams directory.
+    pid = sub.Popen(["ffmpeg", "-i", "http://"+ip+":5004/auto/v"+channel+"?transcode="+quality, "-hls_flags", "delete_segments", "-vcodec", "copy", "-acodec", "mp3", "./static/streams/"+channel+".m3u8"]).pid
     
     with open(streamPath+".pid","w") as f:
             f.write(str(pid))
